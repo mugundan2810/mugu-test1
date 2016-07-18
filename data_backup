@@ -1,0 +1,24 @@
+#!/bin/bash
+#Author :  Babu Natarajan
+#Created on : May 24th 2016
+
+SPATH=$(dirname `which $0`)
+source "$SPATH"/common.sh
+
+export SOURCE="$(cat $CLIENTS)"
+
+if [ ! -z "$SOURCE" ]; then
+    for i in $SOURCE; do
+        if [ -d "$SRC$i/E3" ]; then 
+            echo "Syncing $SRC$i/E3 with $S3DATA$i logging $LOG$i.txt"
+            aws s3 sync "$SRC$i/E3" "$S3DATA$i"  --acl=public-read >> "$LOG$i.txt"
+        else
+            echo "$SRC$i/E3 does not exist"
+        fi 
+    done
+else
+    echo "No clients added in the $SOURCE"
+fi
+echo "Backup completed ..." 
+exit
+

@@ -1,0 +1,16 @@
+#!/bin/bash
+#Author: Babu Natarajan
+#Created on : May 24th 2016
+
+SPATH=$(dirname `which $0`)
+source "$SPATH"/common.sh
+
+/usr/bin/python $SPATH/sendmail.new.py -f "$FROM" -p "$PWD" -t "$TO" -a "$LOG"/*.txt -s "$SUB" -r "$HTML"
+
+tar cvf "$LOG"archive/$HOSTNAME-$TS.tar.gz $LOG/*.txt
+
+if [ -d "$LOG" ] 
+then
+    rm -f "$LOG"*.txt
+else ""
+fi

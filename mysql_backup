@@ -1,0 +1,24 @@
+#!/bin/bash
+#Author: Babu Natarajan
+#Created on : May 24th 2016
+
+SPATH=$(dirname `which $0`)
+source "$SPATH"/common.sh
+
+for i in $MYSQLPATH*/; do
+    if [ $i != "$MYSQLPATH"'mysql/' ] && [ $i != "$MYSQLPATH"'performance_schema/' ] && [ $i != "$MYSQLPATH"'information_schema/' ] ; then 
+        dbname=`basename "$i"` 
+        GZFILE=$DUMP_PATH/"$HOSTNAME"_"$dbname"_"$CTIME".sql.gz
+        S3=s3://"$S3_BUCKET"/mysql/"$CDATE"/
+
+	echo "Dumping database $dbname ..."
+        mysqldump -u $USER -p$PASSWORD "$dbname" | \
+        gzip > $GZFILE
+
+        aws s3 cp $GZFILE $S3 --acl=public-read       
+
+        echo "Deleting $GZFILE ..."
+        rm $GZFILE
+    fi
+done
+exit
